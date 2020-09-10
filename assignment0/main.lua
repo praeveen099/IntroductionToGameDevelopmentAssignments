@@ -50,6 +50,8 @@ VIRTUAL_HEIGHT = 243
 -- paddle movement speed
 PADDLE_SPEED = 200
 
+twoPlayers = false
+
 --[[
     Called just once at the beginning of the game; used to set up
     game objects, variables, etc. and prepare the game world.
@@ -237,13 +239,26 @@ function love.update(dt)
         player1.dy = 0
     end
 
-    -- player 2
-    if love.keyboard.isDown('up') then
-        player2.dy = -PADDLE_SPEED
-    elseif love.keyboard.isDown('down') then
-        player2.dy = PADDLE_SPEED
+    -- if there  are two players playing, then use up and down
+    -- keys for the second player
+    if twoPlayers then
+        -- player 2
+        if love.keyboard.isDown('up') then
+            player2.dy = -PADDLE_SPEED
+        elseif love.keyboard.isDown('down') then
+            player2.dy = PADDLE_SPEED
+        else
+            player2.dy = 0
+        end
     else
-        player2.dy = 0
+        if player2.y + 10 > ball.y then
+            player2.dy = -PADDLE_SPEED
+        elseif player2.y +  10 < ball.y then
+            player2.dy = PADDLE_SPEED
+        else 
+            player2.dy = 0
+        end
+
     end
 
     -- update our ball based on its DX and DY only if we're in play state;
