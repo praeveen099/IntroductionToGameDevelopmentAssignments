@@ -50,7 +50,7 @@ VIRTUAL_HEIGHT = 243
 -- paddle movement speed
 PADDLE_SPEED = 200
 
-twoPlayers = false
+twoPlayers = true
 
 --[[
     Called just once at the beginning of the game; used to set up
@@ -231,13 +231,24 @@ function love.update(dt)
     -- paddles can move no matter what state we're in
     --
     -- player 1
-    if love.keyboard.isDown('w') then
-        player1.dy = -PADDLE_SPEED
-    elseif love.keyboard.isDown('s') then
-        player1.dy = PADDLE_SPEED
-    else
-        player1.dy = 0
+    if twoPlayers then
+        if love.keyboard.isDown('w') then
+            player1.dy = -PADDLE_SPEED
+        elseif love.keyboard.isDown('s') then
+            player1.dy = PADDLE_SPEED
+        else
+            player1.dy = 0
+         end
+     else
+        if player1.y + 10 > ball.y then
+            player1.dy = -PADDLE_SPEED
+        elseif player1.y +  10 < ball.y then
+            player1.dy = PADDLE_SPEED
+        else 
+            player1.dy = 0
+        end
     end
+
 
     -- if there  are two players playing, then use up and down
     -- keys for the second player
@@ -282,17 +293,23 @@ function love.keypressed(key)
     if key == 'escape' then
         -- the function LÖVE2D uses to quit the application
         love.event.quit()
+    elseif key == 'm' and gameState == 'mode' then 
+         gameState = 'serve'
+         twoPlayers = false
+    elseif key == 'h' and gameState == 'mode' then 
+         gameState = 'serve'
+         twoPlayers = true
     -- if we press enter during either the start or serve phase, it should
     -- transition to the next appropriate state
     elseif key == 'enter' or key == 'return' then
         if gameState == 'start' then
-            gameState = 'serve'
+            gameState = 'mode'
         elseif gameState == 'serve' then
             gameState = 'play'
         elseif gameState == 'done' then
             -- game is simply in a restart phase here, but will set the serving
             -- player to the opponent of whomever won for fairness!
-            gameState = 'serve'
+            gameState = 'start'
 
             ball:reset()
 
@@ -325,7 +342,11 @@ function love.draw()
         -- UI messages
         love.graphics.setFont(smallFont)
         love.graphics.printf('Welcome to Pong!', 0, 10, VIRTUAL_WIDTH, 'center')
-        love.graphics.printf('Press Enter to begin!', 0, 20, VIRTUAL_WIDTH, 'center')
+        love.graphics.printf('Press Enter to choose your mode!', 0, 20, VIRTUAL_WIDTH, 'center')
+    elseif gameState == 'mode' then
+        love.graphics.setFont(smallFont)
+        love.graphics.printf('Humans or machine', 0, 10, VIRTUAL_WIDTH, 'center')
+        love.graphics.printf('Press M for machine or H for human', 0, 20, VIRTUAL_WIDTH, 'center')
     elseif gameState == 'serve' then
         -- UI messages
         love.graphics.setFont(smallFont)
