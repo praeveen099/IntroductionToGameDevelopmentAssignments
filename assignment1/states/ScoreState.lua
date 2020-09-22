@@ -10,6 +10,11 @@
 
 ScoreState = Class{__includes = BaseState}
 
+-- since we only want the image loaded once, not per instantation, define it externally
+local BRONZE_MEDAL_IMAGE = love.graphics.newImage('BronzeMedal.png')
+local SILVER_MEDAL_IMAGE = love.graphics.newImage('SilverMedal.png')
+local GOLD_MEDAL_IMAGE = love.graphics.newImage('GoldMedal.png')
+
 --[[
     When we enter the score state, we expect to receive the score
     from the play state so we know what to render to the State.
@@ -34,4 +39,12 @@ function ScoreState:render()
     love.graphics.printf('Score: ' .. tostring(self.score), 0, 100, VIRTUAL_WIDTH, 'center')
 
     love.graphics.printf('Press Enter to Play Again!', 0, 160, VIRTUAL_WIDTH, 'center')
+
+    if (self.score < 5) then
+        love.graphics.draw(BRONZE_MEDAL_IMAGE, VIRTUAL_WIDTH / 2 - 48, VIRTUAL_HEIGHT / 2 + 48);
+    elseif (self.score < 10) then
+        love.graphics.draw(SILVER_MEDAL_IMAGE, VIRTUAL_WIDTH / 2 - 48, VIRTUAL_HEIGHT / 2 + 48);
+    else 
+        love.graphics.draw(GOLD_MEDAL_IMAGE, VIRTUAL_WIDTH / 2 - 48, VIRTUAL_HEIGHT / 2 + 48);
+    end
 end
