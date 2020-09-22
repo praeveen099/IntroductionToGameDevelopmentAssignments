@@ -23,21 +23,24 @@ function PlayState:init()
     self.timer = 0
     self.score = 0
     self.maxTimeBetweenPipes = randomPipeSpawnTimeLimit()
+    self.string = 'play'
 
     -- initialize our last recorded Y value for a gap placement to base other gaps off of
     self.lastY = -PIPE_HEIGHT + math.random(80) + 20
 end
 
 function PlayState:update(dt)
-    -- update timer for pipe spawning
-    self.timer = self.timer + dt
 
-    -- spawn a new pipe pair after a random time
-    -- playing with this value
-    if self.timer > self.maxTimeBetweenPipes then
-        -- modify the last Y coordinate we placed so pipe gaps aren't too far apart
-        -- no higher than 10 pixels below the top edge of the screen,
-        -- and no lower than a gap length from the bottom
+    if scrolling then
+     -- update timer for pipe spawning
+     self.timer = self.timer + dt
+
+      -- spawn a new pipe pair after a random time
+     -- playing with this value
+     if self.timer > self.maxTimeBetweenPipes then
+         -- modify the last Y coordinate we placed so pipe gaps aren't too far apart
+         -- no higher than 10 pixels below the top edge of the screen,
+         -- and no lower than a gap length from the bottom
 
         local pipe_gap = randomPipeGap()
         local y = math.max(-PIPE_HEIGHT + 30, 
@@ -104,6 +107,7 @@ function PlayState:update(dt)
             score = self.score
         })
     end
+  end
 end
 
 function PlayState:render()
