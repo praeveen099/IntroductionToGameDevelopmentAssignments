@@ -32,35 +32,40 @@ end
 function PlayState:update(dt)
 
     if scrolling then
+
+     if not sounds['music']:isPlaying() then
+        sounds['music']:play()
+     end
+
      -- update timer for pipe spawning
      self.timer = self.timer + dt
 
       -- spawn a new pipe pair after a random time
-     -- playing with this value
-     if self.timer > self.maxTimeBetweenPipes then
-         -- modify the last Y coordinate we placed so pipe gaps aren't too far apart
-         -- no higher than 10 pixels below the top edge of the screen,
-         -- and no lower than a gap length from the bottom
+      -- playing with this value
+        if self.timer > self.maxTimeBetweenPipes then
+             -- modify the last Y coordinate we placed so pipe gaps aren't too far apart
+             -- no higher than 10 pixels below the top edge of the screen,
+             -- and no lower than a gap length from the bottom
 
-        local pipe_gap = randomPipeGap()
-        local y = math.max(-PIPE_HEIGHT + 30, 
-            math.min(self.lastY + math.random(-20, 20), VIRTUAL_HEIGHT - pipe_gap - PIPE_HEIGHT))
-        self.lastY = y
+         local pipe_gap = randomPipeGap()
+         local y = math.max(-PIPE_HEIGHT + 30, 
+               math.min(self.lastY + math.random(-20, 20), VIRTUAL_HEIGHT - pipe_gap - PIPE_HEIGHT))
+          self.lastY = y
 
-        -- add a new pipe pair at the end of the screen at our new Y
-        table.insert(self.pipePairs, PipePair(y, pipe_gap))
+          -- add a new pipe pair at the end of the screen at our new Y
+         table.insert(self.pipePairs, PipePair(y, pipe_gap))
 
-        -- reset timer and max time between pipes
-        self.timer = 0
-        self.maxTimeBetweenPipes = randomPipeSpawnTimeLimit()
-    end
+         -- reset timer and max time between pipes
+         self.timer = 0
+         self.maxTimeBetweenPipes = randomPipeSpawnTimeLimit()
+         end
 
-    -- for every pair of pipes..
-    for k, pair in pairs(self.pipePairs) do
-        -- score a point if the pipe has gone past the bird to the left all the way
-        -- be sure to ignore it if it's already been scored
-        if not pair.scored then
-            if pair.x + PIPE_WIDTH < self.bird.x then
+        -- for every pair of pipes..
+     for k, pair in pairs(self.pipePairs) do
+          -- score a point if the pipe has gone past the bird to the left all the way
+            -- be sure to ignore it if it's already been scored
+         if not pair.scored then
+             if pair.x + PIPE_WIDTH < self.bird.x then
                 self.score = self.score + 1
                 pair.scored = true
                 sounds['score']:play()
@@ -107,6 +112,8 @@ function PlayState:update(dt)
             score = self.score
         })
     end
+  else
+    sounds['music']:pause()  
   end
 end
 
@@ -119,6 +126,11 @@ function PlayState:render()
     love.graphics.print('Score: ' .. tostring(self.score), 8, 8)
 
     self.bird:render()
+
+    if not scrolling then
+      love.graphics.setFont(hugeFont)
+      love.graphics.printf(tostring('PAUSED'), 0, 120, VIRTUAL_WIDTH, 'center')
+    end
 end
 
 --[[
